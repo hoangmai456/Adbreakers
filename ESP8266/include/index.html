@@ -19,21 +19,21 @@ body {
   min-height: 100vh;
 }
 
-/* CONTAINER */
+
 #app {
   width: 100%;
   max-width: 420px;
   padding: 20px;
 }
 
-/* HEADER */
+
 h3 {
   margin-top: 0;
   margin-bottom: 15px;
   text-align: center;
 }
 
-/* UPLOAD BOX */
+
 #uploadBox {
   border: 2px dashed #1db954;
   border-radius: 12px;
@@ -62,7 +62,7 @@ h3 {
   cursor: pointer;
 }
 
-/* FILE LIST */
+
 #files {
   list-style: none;
   padding: 0;
@@ -134,10 +134,70 @@ control button:active {
   background: #17a84a;
 }
 
-/* trạng thái đang giữ */
+
 #control button.active {
-  background: #ff9800;   /* màu cam nổi */
+  background: #ff9800;   
   transform: scale(0.9);
+}
+
+
+#mainLayout {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+}
+
+
+#app {
+  flex: 1;
+  max-width: 420px;
+}
+
+
+#controlPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+#control {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#musicToggle {
+  margin: 15px 0;
+  text-align: center;
+}
+
+#musicToggle button {
+  padding: 12px 30px;
+  border-radius: 25px;
+  border: none;
+  background: #1db954;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#musicToggle button.playing {
+  background: #ff5252;
+  color: white;
+}
+
+#musicToggle button:active {
+  transform: scale(0.95);
+}
+
+
+#control .row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 </style>
@@ -146,63 +206,85 @@ control button:active {
 
 <body>
 
-
 <div id="mainLayout">
-<div id="app">
-  <h3>🎵 Quản lý nhạc (SD Card)</h3>
 
-  <div id="uploadBox">
-  <label for="file">
-    📂 Kéo thả hoặc bấm để chọn file
-  </label>
+  
+  <div id="app">
+    <h3>🎵 Quản lý nhạc (SD Card)</h3>
 
-  <input type="file" id="file" accept=".mp3,.wav">
+    <div id="uploadBox">
+      <label for="file">📂 Kéo thả hoặc bấm để chọn file</label>
+      <input type="file" id="file" accept=".mp3,.wav">
 
-  <!-- 🔥 PROGRESS -->
-  <progress id="progressBar" value="0" max="100" style="width:100%"></progress>
-  <div id="percent">0%</div>
+      <progress id="progressBar" value="0" max="100" style="width:100%"></progress>
+      <div id="percent">0%</div>
 
-  <button onclick="upload()">Upload</button>
-</div>
+      <button onclick="upload()">Upload</button>
+    </div>
 
+    <div id="musicToggle">
+      <button id="playPauseBtn" onclick="toggleMusic()">▶ Phát</button>
+    </div>
 
-  <div id="selectedFile">📂 Chưa chọn file</div>
-  <ul id="files"></ul>
-</div>
-
-
-<div id="control">
-  <button id="btn-up"
-    onmousedown="startSend('UP', this)"
-    onmouseup="stopSend()"
-    ontouchstart="startSend('UP', this)"
-    ontouchend="stopSend()">⬆️</button>
-
-  <div>
-    <button id="btn-left"
-      onmousedown="startSend('LEFT', this)"
-      onmouseup="stopSend()"
-      ontouchstart="startSend('LEFT', this)"
-      ontouchend="stopSend()">⬅️</button>
-
-    <button id="btn-down"
-      onmousedown="startSend('DOWN', this)"
-      onmouseup="stopSend()"
-      ontouchstart="startSend('DOWN', this)"
-      ontouchend="stopSend()">⬇️</button>
-
-    <button id="btn-right"
-      onmousedown="startSend('RIGHT', this)"
-      onmouseup="stopSend()"
-      ontouchstart="startSend('RIGHT', this)"
-      ontouchend="stopSend()">➡️</button>
+    <div id="selectedFile">📂 Chưa chọn file</div>
+    <ul id="files"></ul>
   </div>
-</div>
+
+  
+  <div id="controlPanel">
+    <h3>🤖 Điều khiển robot</h3>
+
+    <div id="control">
+  
+      <div class="row">
+        <button id="btn-turn-left"
+          onmousedown="startSend('TURN_LEFT', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('TURN_LEFT', this)"
+          ontouchend="stopSend()">↺</button>
+
+        <button id="btn-up"
+          onmousedown="startSend('UP', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('UP', this)"
+          ontouchend="stopSend()">⬆️</button>
+
+        <button id="btn-turn-right"
+          onmousedown="startSend('TURN_RIGHT', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('TURN_RIGHT', this)"
+          ontouchend="stopSend()">↻</button>
+      </div>
+
+  
+      <div class="row">
+        <button id="btn-left"
+          onmousedown="startSend('LEFT', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('LEFT', this)"
+          ontouchend="stopSend()">⬅️</button>
+
+        <button id="btn-down"
+          onmousedown="startSend('DOWN', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('DOWN', this)"
+          ontouchend="stopSend()">⬇️</button>
+
+        <button id="btn-right"
+          onmousedown="startSend('RIGHT', this)"
+          onmouseup="stopSend()"
+          ontouchstart="startSend('RIGHT', this)"
+          ontouchend="stopSend()">➡️</button>
+      </div>
+  </div>
+
 
 </div>
+
 
 
 </body>
+
 
   
 
@@ -239,7 +321,7 @@ function upload() {
   const xhr = new XMLHttpRequest();
   xhr.open("POST", "/upload", true);
 
-  // 🔥 PROGRESS BAR
+  
   xhr.upload.onprogress = (e) => {
     if (e.lengthComputable) {
       const percent = Math.round((e.loaded / e.total) * 100);
@@ -254,7 +336,7 @@ function upload() {
       document.getElementById("percent").textContent = "✅ Upload xong";
       document.getElementById("progressBar").value = 100;
 
-      setTimeout(loadFiles, 500); // chờ SD ghi xong
+      setTimeout(loadFiles, 500); 
 
       fileInput.value = "";
       selectedText.textContent = "📂 Chưa chọn file";
@@ -310,6 +392,15 @@ function selectFile(name, el) {
     .forEach(li => li.classList.remove("active"));
 
   el.classList.add("active");
+
+   
+  const btn = document.getElementById("playPauseBtn");
+  btn.textContent = "▶ Phát";
+  btn.classList.remove("playing");
+  isPlaying = false;
+
+  
+  fetch("/music?cmd=select&file=" + encodeURIComponent(name));
 }
 
 
@@ -326,7 +417,7 @@ function sendDir(dir) {
 }
 
 
-// ===== BÀN PHÍM PC (ĐỔI MÀU + GỬI LIÊN TỤC) =====
+
 document.addEventListener("keydown", e => {
   if (sendInterval) return;
 
@@ -364,14 +455,15 @@ document.addEventListener("keyup", () => {
 
 let sendInterval = null;
 let activeBtn = null;
+let isPlaying = false;
 
 function startSend(dir, btn) {
   if (sendInterval) return;
 
   activeBtn = btn;
-  btn.classList.add("active"); // 👈 đổi màu
+  btn.classList.add("active"); 
 
-  sendDir(dir); // gửi ngay 1 lần
+  sendDir(dir); 
 
   sendInterval = setInterval(() => {
     sendDir(dir);
@@ -385,8 +477,31 @@ function stopSend(btn) {
   }
 
   if (activeBtn) {
-    activeBtn.classList.remove("active"); // 👈 trả màu cũ
+    activeBtn.classList.remove("active"); 
     activeBtn = null;
+  }
+}
+
+function toggleMusic() {
+  if (!currentFile) {
+    alert("Chưa chọn file");
+    return;
+  }
+
+  const btn = document.getElementById("playPauseBtn");
+
+  if (!isPlaying) {
+    
+    fetch("/music?cmd=play&file=" + encodeURIComponent(currentFile));
+    btn.textContent = "⏹ Dừng";
+    btn.classList.add("playing");
+    isPlaying = true;
+  } else {
+    
+    fetch("/music?cmd=stop&file=" + encodeURIComponent(currentFile));
+    btn.textContent = "▶ Phát";
+    btn.classList.remove("playing");
+    isPlaying = false;
   }
 }
 
