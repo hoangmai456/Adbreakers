@@ -8,15 +8,14 @@ File uploadFile;
 
 const char* ssid = "tên wifi";
 const char* pass = "mật khẩu";
-/* ===== HTML TRANG WEB ===== */
 const char PAGE[] PROGMEM = R"rawliteral(
 
 #dán file html vào đây
 
 )rawliteral";
-#define SD_CS D8   // chân CS của SD
+#define SD_CS D8   
 
-// ================= WIFI =================
+
 void connectWiFi() {
   WiFi.begin(ssid, pass);
   Serial.print("Connecting WiFi");
@@ -28,14 +27,14 @@ void connectWiFi() {
 }
 
 
-// ================= UPLOAD =================
+
 void handleUpload() {
   HTTPUpload& upload = server.upload();
 
   if (upload.status == UPLOAD_FILE_START) {
   String filename = upload.filename;
 
-  // 🔥 CẮT fakepath nếu có
+  
   int slash = filename.lastIndexOf('/');
   int backslash = filename.lastIndexOf('\\');
   int idx = max(slash, backslash);
@@ -45,7 +44,7 @@ void handleUpload() {
 
   filename = "/music/" + filename;
 
-  // 🔥 XÓA FILE CŨ TRƯỚC
+  
   if (SD.exists(filename)) {
     SD.remove(filename);
     Serial.println("Old file removed");
@@ -72,7 +71,7 @@ void handleUpload() {
   }
 }
 
-// ================= LIST FILE =================
+
 void handleList() {
   File dir = SD.open("/music");
   if (!dir || !dir.isDirectory()) {
@@ -87,7 +86,7 @@ void handleList() {
   while (file) {
     if (!file.isDirectory()) {
       String name = file.name();
-      name.replace("/music/", ""); // bỏ path
+      name.replace("/music/", ""); 
 
       if (!first) json += ",";
       json += "\"" + name + "\"";
@@ -105,7 +104,7 @@ void handleList() {
 
 
 
-// ================= DELETE =================
+
 void handleDelete() {
   if (!server.hasArg("file")) {
     server.send(400, "text/plain", "Missing file");
@@ -122,7 +121,7 @@ void handleDelete() {
   }
 }
 
-// ================= SETUP =================
+
 void setup() {
   Serial.begin(115200);
 
@@ -143,12 +142,48 @@ void setup() {
     server.send_P(200, "text/html", PAGE);
   });
 
-  server.on("/arrow", []() {
-    if (server.hasArg("dir")) {
-      Serial.println(server.arg("dir"));
+  server.on("/music", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String cmd = request->getParam("cmd")->value();
+    String file = request->getParam("file")->value();
+
+    if (cmd == "select") {
+      Serial.println("Đang chọn file " + file);
     }
-    server.send(200, "text/plain", "OK");
+    else if (cmd == "play") {
+      Serial.println("Phát file " + file);
+    }
+    else if (cmd == "stop") {
+      Serial.println("Dừng file " + file);
+    }
+
+    request->send(200, "text/plain", "OK");
   });
+
+  server.on("/arrow", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String dir = request->getParam("dir")->value();
+
+    if (dir == "TURN_LEFT") {
+      Serial.println("Turn left");
+    }
+    else if (dir == "TURN_RIGHT") {
+      Serial.println("Turn right");
+    }
+    else if (dir == "UP") {
+      Serial.println("Move forward");
+    }
+    else if (dir == "DOWN") {
+      Serial.println("Move backward");
+    }
+    else if (dir == "LEFT") {
+      Serial.println("Move left");
+    }
+    else if (dir == "RIGHT") {
+      Serial.println("Move right");
+    }
+
+    request->send(200, "text/plain", "OK");
+  });
+
 
   server.on("/upload", HTTP_POST,
     []() { server.send(200); },
@@ -162,7 +197,7 @@ void setup() {
   Serial.println("Web server started");
 }
 
-// ================= LOOP =================
+
 void loop() {
   server.handleClient();
 }
